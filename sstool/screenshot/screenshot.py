@@ -29,7 +29,7 @@ class Screenshot:
 
     def take_screenshot(self):
 
-        self.screenshot = p.screenshot()
+        self.screenshot = p.screenshot(allScreens=True)
         self.screenshot = np.array(self.screenshot)
         self.screenshot = cv2.cvtColor(self.screenshot, cv2.COLOR_RGB2BGR)
 
@@ -45,7 +45,7 @@ class Screenshot:
 
     def transform_image_to_text(self):
 
-        self.screenshot = p.screenshot()
+        self.screenshot = p.screenshot(allScreens=True)
         self.screenshot = np.array(self.screenshot)
         self.screenshot = cv2.cvtColor(self.screenshot, cv2.COLOR_RGB2BGR)
 
