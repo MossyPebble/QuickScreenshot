@@ -5,7 +5,7 @@ screenshot.py
 import cv2, os
 import pyautogui as p
 import numpy as np
-import keyboard, pytesseract, clipboard
+import keyboard, pytesseract, clipboard, win32gui, win32con
 
 __all__ = ['Screenshot']
 
@@ -34,6 +34,9 @@ class Screenshot:
         self.screenshot = cv2.cvtColor(self.screenshot, cv2.COLOR_RGB2BGR)
 
         x, y, w, h = cv2.selectROI('Screenshot', self.screenshot, False)
+        hwnd = win32gui.FindWindow(None, 'Screenshot')
+        win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+
         if w and h:
             self.screenshot = self.screenshot[y:y+h, x:x+w]
             try:
@@ -42,6 +45,8 @@ class Screenshot:
                 print("Screenshot failed to save.")
         else:
             print("Image's width and height must be greater than 0.")
+        
+        cv2.destroyAllWindows()
 
     def transform_image_to_text(self):
 
@@ -50,6 +55,9 @@ class Screenshot:
         self.screenshot = cv2.cvtColor(self.screenshot, cv2.COLOR_RGB2BGR)
 
         x, y, w, h = cv2.selectROI('Screenshot', self.screenshot, False)
+        hwnd = win32gui.FindWindow(None, 'Screenshot')
+        win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOMOVE | win32con.SWP_NOSIZE)
+
         if w and h:
             self.screenshot = self.screenshot[y:y+h, x:x+w]
 
@@ -62,7 +70,7 @@ class Screenshot:
                 config = r'--oem 3 --psm 7 -l kor+eng'
                 text = pytesseract.image_to_string(self.screenshot, config=config)
                 clipboard.copy(text)
-                # print(text)
+                print(text)
             except:
                 print("Text transformation failed.")
         else:
@@ -82,5 +90,3 @@ class Screenshot:
         if result:
             with open(self.path, mode='w+b') as f:
                 encoded_img.tofile(f)
-
-        cv2.destroyAllWindows()
