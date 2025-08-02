@@ -53,6 +53,7 @@ class WindowClass(QMainWindow, form_class) :
         else:
             self.path = self.textEdit_path.toPlainText() + "\\" + self.textEdit_name.toPlainText() + ".jpg"
         self.thread.path = self.path
+        self.number = int(self.textEdit_number.toPlainText()) if self.textEdit_number.toPlainText().isdigit() else 1
         
     def plus(self):
         if self.number_use:
