@@ -2,12 +2,13 @@
 screenshot.py
 '''
 
-import cv2, os
+import cv2, os, json
 import pyautogui as p
 import numpy as np
 import keyboard, pytesseract, clipboard, win32gui, win32con, win32clipboard
 from io import BytesIO
 import struct
+import SSHManager
 
 __all__ = ['Screenshot']
 
@@ -24,16 +25,12 @@ class Screenshot:
         self.count = 1
         self.wating_count = 1
 
+        self.SSHManager = None
+        self.SSHUseFlag = False
+        self.SSHDir = ''
+
     def run(self):
-        # keyboard.add_hotkey('ctrl+shift+a', self.take_screenshot)
-        # keyboard.add_hotkey('ctrl+shift+q', self.transform_image_to_text)
-
         while True:
-            # print('Wating for hotkey...', self.wating_count)
-            # self.wating_count += 1
-            # event = keyboard.read_event()
-            # print(event)
-
             if keyboard.is_pressed("ctrl") and keyboard.is_pressed("shift") and keyboard.is_pressed("a"):
                 print('Ctrl + Shift + A')
                 self.take_screenshot()
@@ -60,8 +57,6 @@ class Screenshot:
 
         # 헤더랑 파일 경로 데이터를 합쳐서 최종 데이터를 만듬
         data = header + files
-
-        # 이제 클립보드에 데이터를 넣을 거야.
         win32clipboard.OpenClipboard()
         try:
             win32clipboard.EmptyClipboard()
@@ -134,15 +129,37 @@ class Screenshot:
     def save(self):
 
         print(f"Screenshot saved as {self.path}")
-        # cv2.imwrite(self.path, self.screenshot)
-        
         extension = os.path.splitext(self.path)[1] # 이미지 확장자
-        
         result, encoded_img = cv2.imencode(extension, self.screenshot)
         
         if result:
             with open(self.path, mode='w+b') as f:
                 encoded_img.tofile(f)
+
+        # SSH 서버 저장 
+        if self.SSHUseFlag:
+            if self.SSHManager == None:
+                print("SSHManager is not set. Initializing SSHManager...")
+                sshSettingsPath = './SSHSettingss.json'
+                if os.path.exists(sshSettingsPath):
+                    with open(sshSettingsPath, 'r') as f:
+                        sshSettings = json.load(f)
+                    self.SSHManager = SSHManager.SSHManager(
+                        host=sshSettings['Host'],
+                        port=sshSettings.get('Port', 22),
+                        userId=sshSettings['User'],
+                        key_path=sshSettings.get('IdentityFile', None)
+                    )
+                else:
+                    print("SSH settings file not found. Skipping SSH operations.")
+                    return
+            
+            try:
+                self.SSHManager.put_file(self.path, self.SSHDir + os.path.basename(self.path))
+                print(f"File {self.path} uploaded to SSH server at {self.SSHDir}.")
+            except Exception as e:
+                print(f"Failed to upload file to SSH server: {e}")
+        else: print("SSHUseFlag is False. Skipping SSH upload.")
 
 if __name__ == "__main__" :
     s = Screenshot('./temp.jpg')

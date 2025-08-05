@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>535</width>
+    <width>895</width>
     <height>303</height>
    </rect>
   </property>
@@ -150,6 +150,37 @@
     </property>
     <property name="checked">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="radioButton_SSHUseFlag">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>10</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SSH Shell 사용</string>
+    </property>
+   </widget>
+   <widget class="QTextEdit" name="textEdit_SSHDir">
+    <property name="geometry">
+     <rect>
+      <x>530</x>
+      <y>30</y>
+      <width>351</width>
+      <height>251</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>28</pointsize>
+     </font>
+    </property>
+    <property name="placeholderText">
+     <string>your/target/server/dir/</string>
     </property>
    </widget>
   </widget>
